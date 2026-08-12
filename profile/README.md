@@ -28,7 +28,7 @@ cohort org using the GitHub Actions below_.
 
 | Repo | Visibility | Description |
 | --- | --- | --- |
-| _(no repos yet)_ | | |
+| [course-materials-f2026](https://github.com/intro-to-data-science-c11/course-materials-f2026) | private | Course materials (lectures/readings by session) |
 
 ## Available actions for faculty, instructors & admin
 
