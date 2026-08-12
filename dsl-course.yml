@@ -1,0 +1,41 @@
+org: intro-to-data-science-c11
+org_name: Introduction to Data Science
+course_name: Introduction to Data Science
+course_code: C11
+
+# This is the persistent COURSE org - it spans many cohorts (years). Cohorts are
+# registered separately in .github/cohort-courses-pages.yml.
+
+# ---------------------------------------------------------------------------
+# People. Two DIFFERENT things live under the `people:` key below - don't
+# confuse them:
+#
+#   course_admins        GRANTS ACCESS. The single source of truth for course-wide
+#                        admin rights - the `course-admin` team here, mirrored into
+#                        every cohort org. "Sync membership" reconciles that team
+#                        FROM this list: a handle added any other way (Teams UI, a
+#                        gh call) is reverted on the next sync unless it's declared
+#                        here, and removing a handle here revokes their access.
+#
+#   instructors          DISPLAY ONLY - website cards (name/photo/title/link) for
+#                        the OPTIONAL public open-courseware course website (the
+#                        "Publish course website" action). They grant NO GitHub
+#                        access. TAs are NOT declared here - they change every
+#                        cohort, so a cohort's whole teaching team (instructors &
+#                        TAs, their GitHub access AND their cohort-site cards) is
+#                        declared PER COHORT in that cohort's classroom-config/people.yml.
+# ---------------------------------------------------------------------------
+people:
+  course_admins:
+    - github_handle: "simonmunzert"    # grants the `course-admin` team
+
+  # Instructor website cards (optional, DISPLAY ONLY - no GitHub access) for the
+  # OPTIONAL public open-courseware course website. TAs are NOT listed here - a
+  # cohort's own teaching team (instructors & TAs) goes in that cohort's
+  # classroom-config/people.yml instead. Uncomment and fill:
+  # instructors:
+  #   - github_handle: "janedoe"
+  #     name:  "Prof. Dr. Jane Doe"
+  #     title: "Professor of Data Science"
+  #     photo: "https://.../headshot.jpg"        # square image URL
+  #     url:   "https://.../profile/jane-doe"     # bio / profile link
