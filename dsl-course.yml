@@ -33,9 +33,9 @@ people:
   # OPTIONAL public open-courseware course website. TAs are NOT listed here - a
   # cohort's own teaching team (instructors & TAs) goes in that cohort's
   # classroom-config/people.yml instead. Uncomment and fill:
-  # instructors:
-  #   - github_handle: "janedoe"
-  #     name:  "Prof. Dr. Jane Doe"
-  #     title: "Professor of Data Science"
-  #     photo: "https://.../headshot.jpg"        # square image URL
-  #     url:   "https://.../profile/jane-doe"     # bio / profile link
+  instructors:
+    - github_handle: "simonmunzert"
+      name:  "Prof. Dr. Simon Munzert"
+      title: "Professor of Data Science and Public Policy"
+      photo: "https://simonmunzert.com/images/simonmunzert-square.jpg"        # square image URL
+      url:   "https://simonmunzert.com/"     # bio / profile link
