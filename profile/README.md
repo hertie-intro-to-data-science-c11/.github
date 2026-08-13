@@ -18,7 +18,7 @@ _This page is auto-generated; edits will be overwritten on the next refresh._
 List of cohort orgs registered to receive releases from this course org. _Auto-discovered from the
 `cohort-courses-pages.yml` registry_:
 
-_(none registered yet - run Bootstrap cohort)_
+- [intro-to-data-science-f26](https://github.com/intro-to-data-science-f26)
 
 ## Repositories
 
