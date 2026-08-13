@@ -18,6 +18,7 @@ on:
         default: "(faculty only)"
         options:
           - (faculty only)
+          - intro-to-data-science-f26
 
 jobs:
   check-team:

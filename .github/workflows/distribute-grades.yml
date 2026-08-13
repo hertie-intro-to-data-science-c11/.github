@@ -12,7 +12,7 @@ on:
         required: true
         type: choice
         options:
-          - (none-yet)
+          - intro-to-data-science-f26
       dry_run:
         description: "Preview the grade emails - push nothing, send nothing"
         type: boolean

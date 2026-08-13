@@ -12,7 +12,7 @@ on:
         required: true
         type: choice
         options:
-          - (none-yet)
+          - intro-to-data-science-f26
 
 jobs:
   check-team:
