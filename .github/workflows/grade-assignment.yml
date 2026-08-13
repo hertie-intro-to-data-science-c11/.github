@@ -2,7 +2,7 @@ name: Grade assignment
 
 # Faculty-side autograder, by hand. The hourly cron already grades each assignment ONCE at
 # its grading deadline - this button is for a deliberate re-grade. Clones each submission as
-# of the cohort schedule's grading deadline (`grading_deadline`, else due + grace_days -
+# of the cohort schedule's grading deadline (`grading_datetime`, else `due_datetime` -
 # SSOT, no input here), runs the HIDDEN tests from the template's solution branch, archives
 # result.json, and fills the machine score into the private grades CSV (faculty & instructors
 # then add manual marks; Render + Distribute send them).
