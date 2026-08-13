@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: hertie-data-science-lab/dsl-teaching-course-setup
+          repository: hertie-data-science-lab/dsl-teaching-toolkit
           ref: main
       - uses: actions/setup-python@v5
         with:

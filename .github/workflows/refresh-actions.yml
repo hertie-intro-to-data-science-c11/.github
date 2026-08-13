@@ -1,34 +1,23 @@
 name: Refresh actions
 
+# Every seeded workflow is frozen at the moment it was seeded, while the engine it calls is
+# always checked out from central main - so an org left alone drifts, until a stale button
+# calls engine code that has since moved. This re-seeds the org daily, so every org
+# converges on central within 24h with nobody pressing anything. The refresh is idempotent
+# and skips files whose content is unchanged, so a night with no central changes is silent.
+
 on:
+  schedule:
+    - cron: "27 5 * * *"
   workflow_dispatch: {}
 
 jobs:
-  check-team:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Verify the user may run actions for THIS repo
-        env:
-          GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
-          ACTOR: ${{ github.actor }}
-          REPO: ${{ github.repository }}
-        run: |
-          # Faculty & instructors have write+ on the course repos; students never do (and triggering a
-          # workflow_dispatch already requires write), so repo permission is the gate.
-          perm=$(gh api "repos/$REPO/collaborators/$ACTOR/permission" --jq '.permission' 2>/tmp/gherr || true)
-          case "$perm" in admin|write|maintain) exit 0 ;; esac
-          echo "::error::@$ACTOR lacks write on $REPO (permission='$perm'). gh api said:"
-          cat /tmp/gherr || true
-          exit 1
-
   refresh:
-    needs: check-team
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: hertie-data-science-lab/dsl-teaching-course-setup
+          repository: hertie-data-science-lab/dsl-teaching-toolkit
           ref: main
       - uses: actions/setup-python@v5
         with:

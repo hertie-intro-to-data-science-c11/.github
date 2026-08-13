@@ -1,51 +1,36 @@
 name: Release materials
 
-# Prefer scheduling: a `materials_releases` entry in classroom-config/schedule.yml releases this
-# automatically - this button is the manual fallback.
+# Central copy: pick the SOURCE repo in this course org, then the path(s) to copy into
+# the cohort org. course_source_path and cohort_dest_path are comma-separated parallel lists paired
+# by index - leave cohort_dest_path blank to mirror course_source_path. These are exactly a
+# schedule.yml `deploy:` entry's fields.
+# Dropdowns are refreshed by the 'Refresh actions' workflow.
 
 on:
   workflow_dispatch:
     inputs:
-      source_repo:
-        description: "Source materials repo (in this course org)"
-        required: true
-        type: choice
-        options:
-          - course-materials-f2026
       cohort_org:
         description: "Target cohort org"
         required: true
         type: choice
         options:
           - intro-to-data-science-f26
-      release_labs:
-        description: "Release labs this session?"
-        type: boolean
-        default: true
-      labs_path:
-        description: "Where to put it - leave blank to create/use a repo named 'labs' at its root. Otherwise: first segment = repo name, rest = folder path inside it (e.g. 'materials/labs')."
-        required: false
-      release_lectures:
-        description: "Release lectures this session?"
-        type: boolean
-        default: true
-      lectures_path:
-        description: "Where to put it - leave blank to create/use a repo named 'lectures' at its root. Otherwise: first segment = repo name, rest = folder path inside it (e.g. 'materials/lectures')."
-        required: false
-      release_readings:
-        description: "Release readings this session?"
-        type: boolean
-        default: true
-      readings_path:
-        description: "Where to put it - leave blank to create/use a repo named 'readings' at its root. Otherwise: first segment = repo name, rest = folder path inside it (e.g. 'materials/readings')."
-        required: false
-      sessions:
-        description: "Session(s) to release - comma and/or range list, e.g. 1,3,5-7"
+      course_source_repo:
+        description: "course_source_repo - repo in the COURSE org"
         required: true
-      include_root_files:
-        description: "Also release the syllabus + source README (root files) - overwrites"
-        type: boolean
-        default: false
+        type: choice
+        options:
+          - course-materials-f2026
+      course_source_path:
+        description: "course_source_path - folder/file, or a comma-separated list"
+        required: true
+      cohort_dest_repo:
+        description: "cohort_dest_repo - repo in the cohort org (created if missing)"
+        required: false
+        default: materials
+      cohort_dest_path:
+        description: "cohort_dest_path - blank = mirror course_source_path"
+        required: false
 
 jobs:
   check-team:
@@ -72,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: hertie-data-science-lab/dsl-teaching-course-setup
+          repository: hertie-data-science-lab/dsl-teaching-toolkit
           ref: main
       - uses: actions/setup-python@v5
         with:
@@ -82,23 +67,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           SRC_ORG: ${{ github.repository_owner }}
-          SRC_REPO: ${{ inputs.source_repo }}
+          COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
           COHORT_ORG: ${{ inputs.cohort_org }}
-          SESSIONS: ${{ inputs.sessions }}
-          INC_ROOT: ${{ inputs.include_root_files }}
-          RELEASE_LABS: ${{ inputs.release_labs }}
-          PATH_LABS: ${{ inputs.labs_path }}
-          RELEASE_LECTURES: ${{ inputs.release_lectures }}
-          PATH_LECTURES: ${{ inputs.lectures_path }}
-          RELEASE_READINGS: ${{ inputs.release_readings }}
-          PATH_READINGS: ${{ inputs.readings_path }}
+          COURSE_SOURCE_PATH: ${{ inputs.course_source_path }}
+          COHORT_DEST_REPO: ${{ inputs.cohort_dest_repo }}
+          COHORT_DEST_PATH: ${{ inputs.cohort_dest_path }}
         run: |
           gh auth setup-git
-          args=(--source-org "$SRC_ORG" --source-repo "$SRC_REPO"
-                --cohort-org "$COHORT_ORG" --sessions "$SESSIONS")
-          [ "$RELEASE_LABS" = "true" ] && destinations="$destinations labs=${PATH_LABS:-labs}"
-          [ "$RELEASE_LECTURES" = "true" ] && destinations="$destinations lectures=${PATH_LECTURES:-lectures}"
-          [ "$RELEASE_READINGS" = "true" ] && destinations="$destinations readings=${PATH_READINGS:-readings}"
-          [ -n "$destinations" ] && args+=(--destinations "$destinations")
-          [ "$INC_ROOT" = "true" ] && args+=(--syllabus --readme)
-          python3 -m dsl_course.release "${args[@]}"
+          python3 -m dsl_course.deploy --source-org "$SRC_ORG" \
+            --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" \
+            --course-source-path "$COURSE_SOURCE_PATH" --cohort-dest-repo "$COHORT_DEST_REPO" \
+            --cohort-dest-path "$COHORT_DEST_PATH"

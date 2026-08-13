@@ -4,9 +4,6 @@ name: Release assignment
 # repo (native template-generate). The assignment dropdown lists the course org's
 # assignment-* template repos; refresh repopulates it.
 
-# Prefer scheduling: a `materials_releases` entry in classroom-config/schedule.yml releases this
-# automatically - this button is the manual fallback.
-
 on:
   workflow_dispatch:
     inputs:
@@ -62,7 +59,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: hertie-data-science-lab/dsl-teaching-course-setup
+          repository: hertie-data-science-lab/dsl-teaching-toolkit
           ref: main
       - uses: actions/setup-python@v5
         with:
