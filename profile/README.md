@@ -6,7 +6,7 @@ every faculty & instructors action button. Each year's students live in a separa
 receives releases from here.
 
 > **Faculty & instructors - start here:** run everything from the
-> **[`.github` Actions tab](https://github.com/intro-to-data-science-c11/.github/actions)**. New to the platform?
+> **[`.github` Actions tab](https://github.com/hertie-intro-to-data-science-c11/.github/actions)**. New to the platform?
 > Follow the step-by-step
 > **[workflow runbooks](https://github.com/hertie-data-science-lab/dsl-teaching-toolkit/blob/main/docs/README.md)**.
 > The sections below are a live index of this org's cohorts, repositories, and actions.
@@ -18,8 +18,8 @@ _This page is auto-generated; edits will be overwritten on the next refresh._
 List of cohort orgs registered to receive releases from this course org. _Auto-discovered from the
 `cohort-courses-pages.yml` registry_:
 
-- [Intro-to-Data-Science-f2025](https://github.com/Intro-to-Data-Science-f2025)
-- [Intro-to-Data-Science-f2026](https://github.com/Intro-to-Data-Science-f2026)
+- [hertie-intro-to-data-science-f2025](https://github.com/hertie-intro-to-data-science-f2025)
+- [hertie-intro-to-data-science-f2026](https://github.com/hertie-intro-to-data-science-f2026)
 
 ## Repositories
 
@@ -29,43 +29,43 @@ cohort org using the GitHub Actions below_.
 
 | Repo | Visibility | Description |
 | --- | --- | --- |
-| [course-materials-f2025](https://github.com/intro-to-data-science-c11/course-materials-f2025) | private | Course materials (lectures/readings by session) |
-| [course-materials-f2026](https://github.com/intro-to-data-science-c11/course-materials-f2026) | private | Course materials (lectures/readings by session) |
+| [course-materials-f2025](https://github.com/hertie-intro-to-data-science-c11/course-materials-f2025) | private | Course materials (lectures/readings by session) |
+| [course-materials-f2026](https://github.com/hertie-intro-to-data-science-c11/course-materials-f2026) | private | Course materials (lectures/readings by session) |
 
 ## Available actions for faculty, instructors & admin
 
-All actions live in the [`.github` repo's Actions tab](https://github.com/intro-to-data-science-c11/.github/actions)
+All actions live in the [`.github` repo's Actions tab](https://github.com/hertie-intro-to-data-science-c11/.github/actions)
 _(automatically bootstrapped from the central
 [dsl-teaching-toolkit repo](https://github.com/hertie-data-science-lab/dsl-teaching-toolkit))_:
 
 ### One-time setup actions:
-- [**Bootstrap cohort**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/bootstrap-cohort.yml) - configure a freshly-created cohort org (sets up scaffold repos), register it with the course org, refresh dropdowns.
-- [**Send enrolment codes**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/send-codes.yml) - generate a random non-PII enrolment code per student and email each their code (to their university inbox). Students paste the code into the welcome Join issue - no personal data in the public repo. `dry_run` previews codes + emails. Needs the `GRAPH_*` (or `SMTP_*`) secrets.
-- [**Sync membership**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/sync-membership.yml) - one consolidated, fully-automatic reconcile of org + `students`-team access (from `students.csv`), project teams (from `teams.csv`), `course_admins` (from this org's declared `people:` block, mirrored into every cohort's own `course-admin` team), and each cohort's own `instructors`/`teaching_assistants` (from its `classroom-config/people.yml`, reconciled into that cohort's `instructors` team AND a course-org `instructors-<tag>` team). Triggers on push (editing any of those files takes effect immediately, including removals - there's no prune toggle, the file is the live truth) and on a daily cron (catches a faculty entry's `start`/`end` rotation with no edit that day); `workflow_dispatch` is a manual escape hatch.
-- [**New materials repo**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/new-materials.yml) - scaffold a correctly-structured `course-materials-<year>` repo (session folders + the Release buttons).
-- [**New assignment**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/new-assignment.yml) - scaffold an `assignment-N-<year>` template repo (starter on `main`; the `solution` branch carries the model solution, `grading.yml`, and the hidden tests).
-- [**Refresh actions**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/refresh-actions.yml) - repopulate the cohort/session/assignment dropdowns, re-equip content repos, and rebuild this index. Runs itself nightly, so this org stays in step with the central toolkit on its own.
-- [**Check cohort setup**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/check-cohort-setup.yml) - a per-cohort checklist of everything configured (identity, people, schedule + release plan, roster, teams, grades) with direct edit links for anything missing. Read-only.
+- [**Bootstrap cohort**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/bootstrap-cohort.yml) - configure a freshly-created cohort org (sets up scaffold repos), register it with the course org, refresh dropdowns.
+- [**Send enrolment codes**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/send-codes.yml) - generate a random non-PII enrolment code per student and email each their code (to their university inbox). Students paste the code into the welcome Join issue - no personal data in the public repo. `dry_run` previews codes + emails. Needs the `GRAPH_*` (or `SMTP_*`) secrets.
+- [**Sync membership**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/sync-membership.yml) - one consolidated, fully-automatic reconcile of org + `students`-team access (from `students.csv`), project teams (from `teams.csv`), `course_admins` (from this org's declared `people:` block, mirrored into every cohort's own `course-admin` team), and each cohort's own `instructors`/`teaching_assistants` (from its `classroom-config/people.yml`, reconciled into that cohort's `instructors` team AND a course-org `instructors-<tag>` team). Triggers on push (editing any of those files takes effect immediately, including removals - there's no prune toggle, the file is the live truth) and on a daily cron (catches a faculty entry's `start`/`end` rotation with no edit that day); `workflow_dispatch` is a manual escape hatch.
+- [**New materials repo**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/new-materials.yml) - scaffold a correctly-structured `course-materials-<year>` repo (session folders + the Release buttons).
+- [**New assignment**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/new-assignment.yml) - scaffold an `assignment-N-<year>` template repo (starter on `main`; the `solution` branch carries the model solution, `grading.yml`, and the hidden tests).
+- [**Refresh actions**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/refresh-actions.yml) - repopulate the cohort/session/assignment dropdowns, re-equip content repos, and rebuild this index. Runs itself nightly, so this org stays in step with the central toolkit on its own.
+- [**Check cohort setup**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/check-cohort-setup.yml) - a per-cohort checklist of everything configured (identity, people, schedule + release plan, roster, teams, grades) with direct edit links for anything missing. Read-only.
 
 ### Optional: public course website (open courseware)
-- [**Publish course website**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/publish-site.yml) - build/refresh a PUBLIC site `intro-to-data-science-c11.github.io` that shares this course's lecture materials and readings with the world. Opt-in (the first run scaffolds the site); afterwards a daily cron re-syncs it from the settings that run chose, so later materials edits appear without another click. Pick a materials repo and choose for readings: `reading-list` (citations only) or `actual-readings` (also host the files). Because the materials repos are private, the site **hosts** the shared files itself. This is separate from each cohort's student-facing site.
+- [**Publish course website**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/publish-site.yml) - build/refresh a PUBLIC site `hertie-intro-to-data-science-c11.github.io` that shares this course's lecture materials and readings with the world. Opt-in (the first run scaffolds the site); afterwards a daily cron re-syncs it from the settings that run chose, so later materials edits appear without another click. Pick a materials repo and choose for readings: `reading-list` (citations only) or `actual-readings` (also host the files). Because the materials repos are private, the site **hosts** the shared files itself. This is separate from each cohort's student-facing site.
 
 ### Session cadence actions:
-- [**Release materials**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/release-materials.yml) - copy path(s) from a course repo into a cohort repo: any folder or file (a session folder, a whole section, a subpackage of a growing importable package), one or several at a time.
-- [**Release assignment**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/release-assignment.yml) - generate one private repo per student from a chosen `assignment-*` template repo.
+- [**Release materials**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/release-materials.yml) - copy path(s) from a course repo into a cohort repo: any folder or file (a session folder, a whole section, a subpackage of a growing importable package), one or several at a time.
+- [**Release assignment**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/release-assignment.yml) - generate one private repo per student from a chosen `assignment-*` template repo.
 
 NB: alternatively each materials repo *also* carries its own **Release** buttons (run from inside the
 repo; there `course_source_repo` is pre-filled with that repo instead of being a dropdown).
 
 ### Grades (private, previewable):
-- [**Grade assignment**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/grade-assignment.yml) - faculty-side autograder: after the deadline, run the HIDDEN tests (from the template's `solution` branch) against each submission and record the machine score into `classroom-config/grades/<assignment>.csv`. Nothing is written to student repos; faculty & instructors then add manual marks. Optional per assignment (skipped if `grading.yml` sets `autograde: false`).
-- [**Sync gradebooks**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/sync-gradebooks.yml) - ensure every onboarded student has a PRIVATE `grades-<handle>` repo (the single home for all their grades). Idempotent.
-- [**Render grades (preview)**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/render-grades.yml) - build per-student `gradebook/<handle>.yml` from `classroom-config/grades/<assignment>.csv` and open ONE pull request. **That PR is the preview** - review every student's grades in the diff before sending.
-- [**Distribute grades**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/distribute-grades.yml) - after merging the preview PR, copy each student's gradebook into their private repo and (unless silenced) email each student a notification to their university inbox (needs the `GRAPH_*` or `SMTP_*` secrets).
+- [**Grade assignment**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/grade-assignment.yml) - faculty-side autograder: after the deadline, run the HIDDEN tests (from the template's `solution` branch) against each submission and record the machine score into `classroom-config/grades/<assignment>.csv`. Nothing is written to student repos; faculty & instructors then add manual marks. Optional per assignment (skipped if `grading.yml` sets `autograde: false`).
+- [**Sync gradebooks**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/sync-gradebooks.yml) - ensure every onboarded student has a PRIVATE `grades-<handle>` repo (the single home for all their grades). Idempotent.
+- [**Render grades (preview)**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/render-grades.yml) - build per-student `gradebook/<handle>.yml` from `classroom-config/grades/<assignment>.csv` and open ONE pull request. **That PR is the preview** - review every student's grades in the diff before sending.
+- [**Distribute grades**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/distribute-grades.yml) - after merging the preview PR, copy each student's gradebook into their private repo and (unless silenced) email each student a notification to their university inbox (needs the `GRAPH_*` or `SMTP_*` secrets).
 
-- [**Scheduled release**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/scheduled-release.yml) - hourly cron that auto-releases whatever each cohort's `classroom-config/schedule.yml` `releases:` plan says is now due (honouring each release's `when` time to the hour). Manual runs default to a dry-run preview ("what opens when"). Manual buttons above still work for early/ad-hoc release.
+- [**Scheduled release**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/scheduled-release.yml) - hourly cron that auto-releases whatever each cohort's `classroom-config/schedule.yml` `releases:` plan says is now due (honouring each release's `when` time to the hour). Manual runs default to a dry-run preview ("what opens when"). Manual buttons above still work for early/ad-hoc release.
 
-- _[**Sync site**](https://github.com/intro-to-data-science-c11/.github/actions/workflows/sync-site.yml) - regenerate a cohort's website from the org structure (releases do this automatically; standard workflow has no need for manual sync)._
+- _[**Sync site**](https://github.com/hertie-intro-to-data-science-c11/.github/actions/workflows/sync-site.yml) - regenerate a cohort's website from the org structure (releases do this automatically; standard workflow has no need for manual sync)._
 
 ## How the actions behave
 
@@ -93,7 +93,7 @@ branch so a normal release never leaks them.
 on every release (and via **Sync site**). Its lecture links point at the cohort's private repos, so
 they only resolve for enrolled members (deliberate).
 
-**The public course website** (optional) - `Publish course website` builds `intro-to-data-science-c11.github.io`, a public
+**The public course website** (optional) - `Publish course website` builds `hertie-intro-to-data-science-c11.github.io`, a public
 open-courseware site for the course as a whole. Unlike the cohort sites it **hosts** the shared lecture
 files (the source repos are private, so links would 404); readings are published either as a text-only
 reading list or as hosted files. It is opt-in - releases and refresh never touch it, so a public site
@@ -103,7 +103,7 @@ settings you chose, so later materials edits reach it on their own.
 ## Repository structure (required)
 
 ```
-intro-to-data-science-c11/                            <- this COURSE org (persistent)
+hertie-intro-to-data-science-c11/                            <- this COURSE org (persistent)
 |-- .github/                      profile + faculty & instructors action buttons + cohort registry
 |-- course-materials-<year>/      lectures/01_.../   readings/01_.../   (+ syllabus, README)
 `-- assignment-<n>-<year>/        is_template repo:
