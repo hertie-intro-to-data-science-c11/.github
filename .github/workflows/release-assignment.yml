@@ -12,8 +12,8 @@ on:
         required: true
         type: choice
         options:
-          - Intro-to-Data-Science-f2025
-          - Intro-to-Data-Science-f2026
+          - hertie-intro-to-data-science-f2025
+          - hertie-intro-to-data-science-f2026
       course_source_repo:
         description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
         required: true
