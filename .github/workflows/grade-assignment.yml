@@ -22,8 +22,8 @@ on:
         type: choice
         options:
           - intro-to-data-science-f26
-      assignment:
-        description: "Assignment template repo (e.g. assignment-1-f2026)"
+      course_source_repo:
+        description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
         required: true
       group:
         description: "Group assignment - grade one repo per team"
@@ -70,13 +70,13 @@ jobs:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           MASTER_ORG: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
-          TEMPLATE: ${{ inputs.assignment }}
+          COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
           GROUP: ${{ inputs.group }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
           gh auth setup-git
           pip install --quiet pytest nbconvert
-          args=(--master-org "$MASTER_ORG" --template "$TEMPLATE" --cohort-org "$COHORT_ORG")
+          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG")
           [ "$GROUP" = "true" ] && args+=(--group)
           [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
           python3 -m dsl_course.collect "${args[@]}"
