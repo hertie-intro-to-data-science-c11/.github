@@ -17,6 +17,7 @@ on:
         description: "Source materials repo (in this course org) to publish"
         required: true
         type: choice
+        default: "course-materials-f2026"
         options:
           - course-materials-f2025
           - course-materials-f2026

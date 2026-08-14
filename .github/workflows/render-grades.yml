@@ -11,6 +11,7 @@ on:
         description: "Cohort org"
         required: true
         type: choice
+        default: "hertie-intro-to-data-science-f2026"
         options:
           - hertie-intro-to-data-science-f2025
           - hertie-intro-to-data-science-f2026

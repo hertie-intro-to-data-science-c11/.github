@@ -9,29 +9,30 @@ name: Release materials
 on:
   workflow_dispatch:
     inputs:
-      cohort_org:
-        description: "Target cohort org"
-        required: true
-        type: choice
-        options:
-          - hertie-intro-to-data-science-f2025
-          - hertie-intro-to-data-science-f2026
       course_source_repo:
-        description: "course_source_repo - repo in the COURSE org"
+        description: "1. repo to release from in the course org"
         required: true
         type: choice
+        default: "course-materials-f2026"
         options:
           - course-materials-f2025
           - course-materials-f2026
       course_source_path:
-        description: "course_source_path - folder/file, or a comma-separated list"
+        description: "2. within-repo folder/file path to copy from (or comma-separated list)"
         required: true
+      cohort_org:
+        description: "3. target cohort org"
+        required: true
+        type: choice
+        default: "hertie-intro-to-data-science-f2026"
+        options:
+          - hertie-intro-to-data-science-f2025
+          - hertie-intro-to-data-science-f2026
       cohort_dest_repo:
-        description: "cohort_dest_repo - repo in the cohort org (created if missing)"
-        required: false
-        default: materials
+        description: "4. repo to release to in the cohort org; created if missing"
+        required: true
       cohort_dest_path:
-        description: "cohort_dest_path - blank = mirror course_source_path"
+        description: "5. within-repo destination path (blank mirrors box 2's path(s)); created if missing"
         required: false
 
 jobs:
