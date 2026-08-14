@@ -18,7 +18,8 @@ _This page is auto-generated; edits will be overwritten on the next refresh._
 List of cohort orgs registered to receive releases from this course org. _Auto-discovered from the
 `cohort-courses-pages.yml` registry_:
 
-- [intro-to-data-science-f26](https://github.com/intro-to-data-science-f26)
+- [Intro-to-Data-Science-f2025](https://github.com/Intro-to-Data-Science-f2025)
+- [Intro-to-Data-Science-f2026](https://github.com/Intro-to-Data-Science-f2026)
 
 ## Repositories
 
@@ -28,6 +29,7 @@ cohort org using the GitHub Actions below_.
 
 | Repo | Visibility | Description |
 | --- | --- | --- |
+| [course-materials-f2025](https://github.com/intro-to-data-science-c11/course-materials-f2025) | private | Course materials (lectures/readings by session) |
 | [course-materials-f2026](https://github.com/intro-to-data-science-c11/course-materials-f2026) | private | Course materials (lectures/readings by session) |
 
 ## Available actions for faculty, instructors & admin
