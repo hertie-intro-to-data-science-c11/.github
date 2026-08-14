@@ -18,6 +18,7 @@ on:
         required: true
         type: choice
         options:
+          - course-materials-f2025
           - course-materials-f2026
       readings_mode:
         description: "Readings: reading-list (citations) / actual-readings (files) / none"

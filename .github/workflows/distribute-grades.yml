@@ -12,7 +12,8 @@ on:
         required: true
         type: choice
         options:
-          - intro-to-data-science-f26
+          - Intro-to-Data-Science-f2025
+          - Intro-to-Data-Science-f2026
       dry_run:
         description: "Preview the grade emails - push nothing, send nothing"
         type: boolean

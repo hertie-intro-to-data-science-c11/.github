@@ -12,7 +12,8 @@ on:
         required: true
         type: choice
         options:
-          - intro-to-data-science-f26
+          - Intro-to-Data-Science-f2025
+          - Intro-to-Data-Science-f2026
       course_source_repo:
         description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
         required: true

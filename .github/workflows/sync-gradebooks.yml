@@ -11,7 +11,8 @@ on:
         required: true
         type: choice
         options:
-          - intro-to-data-science-f26
+          - Intro-to-Data-Science-f2025
+          - Intro-to-Data-Science-f2026
       dry_run:
         description: "Preview only - list the gradebook repos that WOULD be created"
         type: boolean
