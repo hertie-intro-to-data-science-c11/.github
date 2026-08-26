@@ -1,25 +1,38 @@
 # SYSTEM-OWNED - do not edit, edits here are overwritten. This workflow is
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
-name: Sync gradebooks
+name: Generate syllabus
 
-# Ensures every onboarded student has a PRIVATE grades-<handle> repo (student = read) -
-# the single home for all their grades. Idempotent; safe to re-run after new enrolments.
+# Writes the "Course sessions and readings" section of a syllabus - one block per session,
+# with its title, its learning objectives and its reading list - from the cohort's
+# classroom-config/schedule.yml and this repo's readings/ folders.
+#
+# It lands in SYLLABUS.sessions.md beside your syllabus, and is NEVER released to students.
+# Paste what you want into SYLLABUS.md; a re-run overwrites the companion file, never your
+# syllabus. Dropdowns are refreshed by the 'Refresh actions' workflow.
 
 on:
   workflow_dispatch:
     inputs:
+      course_source_repo:
+        description: "Repo holding your syllabus and readings"
+        required: true
+        type: choice
+        default: "course-materials-f2026"
+        options:
+          - course-materials-f2025
+          - course-materials-f2026
       cohort_org:
-        description: "Cohort org"
+        description: "Cohort whose schedule.yml supplies the sessions"
         required: true
         type: choice
         default: "hertie-intro-to-data-science-f2026"
         options:
           - hertie-intro-to-data-science-f2025
           - hertie-intro-to-data-science-f2026
-      dry_run:
-        description: "Preview only - list the gradebook repos that WOULD be created"
+      write:
+        description: "Commit the block to SYLLABUS.sessions.md (off = just print it)"
         type: boolean
-        default: false
+        default: true
 
 permissions: {}
 
@@ -43,7 +56,7 @@ jobs:
           cat /tmp/gherr || true
           exit 1
 
-  sync-gradebooks:
+  syllabus:
     needs: check-team
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -56,12 +69,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Sync gradebooks
+      - name: Generate
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
+          COURSE: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          SOURCE_REPO: ${{ inputs.course_source_repo }}
+          WRITE: ${{ inputs.write }}
         run: |
-          args=(--cohort-org "$COHORT_ORG")
-          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
-          python3 -m dsl_course.grades sync "${args[@]}"
+          args=(--course-org "$COURSE" --cohort-org "$COHORT_ORG" --course-source-repo "$SOURCE_REPO")
+          [ "$WRITE" = "true" ] && args+=(--write)
+          python3 -m dsl_course.syllabus "${args[@]}"
