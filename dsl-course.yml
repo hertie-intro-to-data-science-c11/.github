@@ -1,8 +1,20 @@
+# INSTRUCTOR-OWNED - yours to edit freely; edits here are not overwritten.
+#
 org: hertie-intro-to-data-science-c11
 org_name: Introduction to Data Science
 course_name: Introduction to Data Science
 course_code: C11
+# course_description: One or two sentences, on ONE line - the blurb on every cohort site.
+# site_link_extensions: [pdf, html, ipynb]   # OPTIONAL: on the COHORT sites, link ONLY
+#   # these file types. Default (unset): each session's root files, plus one link per
+#   # subfolder - so a rendered deck lists the deck, not its hundreds of assets. Either way
+#   # everything you release still ships, and the folder itself is always one click away.
+#   # (The public open-courseware site always lists root files - it hosts what it lists.)
 
+# `course_name`, `course_code` and `course_description` are what reach the cohort
+# websites. Editing them here re-syncs every cohort site already bootstrapped from this
+# course org.
+#
 # This is the persistent COURSE org - it spans many cohorts (years). Cohorts are
 # registered separately in .github/cohort-courses-pages.yml.
 
@@ -12,10 +24,9 @@ course_code: C11
 #
 #   course_admins        GRANTS ACCESS. The single source of truth for course-wide
 #                        admin rights - the `course-admin` team here, mirrored into
-#                        every cohort org. "Sync membership" reconciles that team
-#                        FROM this list: a handle added any other way (Teams UI, a
-#                        gh call) is reverted on the next sync unless it's declared
-#                        here, and removing a handle here revokes their access.
+#                        every cohort org. A handle added any other way is reverted
+#                        on the next sync unless it's declared here; removing a
+#                        handle here revokes their access.
 #
 #   instructors          DISPLAY ONLY - website cards (name/photo/title/link) for
 #                        the OPTIONAL public open-courseware course website (the
