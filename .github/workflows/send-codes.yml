@@ -23,6 +23,10 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: ${{ github.repository }}-send-codes
+  cancel-in-progress: false
+
 permissions: {}
 
 jobs:
