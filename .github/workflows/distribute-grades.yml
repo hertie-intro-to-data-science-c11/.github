@@ -4,7 +4,7 @@ name: Distribute grades
 
 # Run AFTER merging the Render grades preview PR. Copies each merged gradebook/<handle>.yml
 # into that student's private grades-<handle> repo and (unless silenced) emails them a
-# notification to their university inbox. Needs the GRAPH_* (or SMTP_*) secrets for the email.
+# notification to their hertie email address. Needs the GRAPH_* secrets for the email.
 
 on:
   workflow_dispatch:
@@ -73,15 +73,10 @@ jobs:
           SILENT: ${{ inputs.silent }}
           GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
           GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
-          GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
+          GRAPH_CLIENT_CERT: ${{ secrets.GRAPH_CLIENT_CERT }}
           GRAPH_SENDER: ${{ secrets.GRAPH_SENDER }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM }}
         run: |
           args=(--cohort-org "$COHORT_ORG")
-          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          if [ "$DRY_RUN" = "false" ]; then args+=(--no-dry-run); else args+=(--dry-run); fi
           [ "$SILENT" = "true" ] && args+=(--no-notify)
           python3 -m dsl_course.grades distribute "${args[@]}"
