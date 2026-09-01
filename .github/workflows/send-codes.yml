@@ -3,54 +3,27 @@
 name: Send enrolment codes
 
 # Generates a random enrolment code per student (into classroom-config/students.csv) and
-# emails each not-yet-onboarded student their code to their hertie email address. Students paste
-# the code into the welcome Join course issue - no personal data in the public repo. dry_run
-# previews the codes + emails without writing or sending. Needs the GRAPH_* secrets.
+# emails each not-yet-onboarded student their code to their hertie email address. Students
+# paste the code into the welcome Join course issue - no personal data in the public repo.
+# Needs the GRAPH_* secrets.
+#
+# There is no button: a push to a cohort's students.csv is what fires this (its
+# classroom-config dispatch-send-codes.yml dispatches `send-codes`), so the roster is the
+# only thing anyone edits. Re-running is safe - a row is mailed only while its
+# `code_sent_at` is blank - so a re-send is a fresh push to the roster.
 
 on:
-  workflow_dispatch:
-    inputs:
-      cohort_org:
-        description: "Cohort org"
-        required: true
-        type: choice
-        default: "hertie-intro-to-data-science-f2026"
-        options:
-          - hertie-intro-to-data-science-f2025
-          - hertie-intro-to-data-science-f2026
-      dry_run:
-        description: "Preview the codes + emails - write nothing, send nothing"
-        type: boolean
-        default: true
+  repository_dispatch:
+    types: [send-codes]
 
 concurrency:
-  group: ${{ github.repository }}-send-codes
+  group: ${{ github.repository }}-send-codes-${{ github.event.client_payload.cohort_org }}
   cancel-in-progress: false
 
 permissions: {}
 
 jobs:
-  check-team:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Verify the user may run actions for THIS repo
-        env:
-          GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
-          ACTOR: ${{ github.actor }}
-          REPO: ${{ github.repository }}
-        run: |
-          # Faculty & instructors have write+ on the course repos; students never do (and triggering a
-          # workflow_dispatch already requires write), so repo permission is the gate.
-          perm=$(gh api "repos/$REPO/collaborators/$ACTOR/permission" --jq '.permission' 2>/tmp/gherr || true)
-          case "$perm" in admin|write|maintain) exit 0 ;; esac
-          echo "::error::@$ACTOR lacks write on $REPO (permission='$perm'). gh api said:"
-          cat /tmp/gherr || true
-          exit 1
-
   send-codes:
-    needs: check-team
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -62,16 +35,24 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Send enrolment codes
+      - name: Send enrolment codes for the cohort that pushed its roster
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
-          COHORT_ORG: ${{ inputs.cohort_org }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          COURSE: ${{ github.repository_owner }}
+          DISPATCH_COHORT: ${{ github.event.client_payload.cohort_org }}
           GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
           GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
           GRAPH_CLIENT_CERT: ${{ secrets.GRAPH_CLIENT_CERT }}
           GRAPH_SENDER: ${{ secrets.GRAPH_SENDER }}
         run: |
-          args=(--cohort-org "$COHORT_ORG")
-          if [ "$DRY_RUN" = "false" ]; then args+=(--no-dry-run); else args+=(--dry-run); fi
-          python3 -m dsl_course.enrol_codes "${args[@]}"
+          # A payload with no cohort names nothing to send for. Fail loudly rather than
+          # let an empty --cohort-org reach the CLI and be refused for the wrong reason.
+          if [ -z "$DISPATCH_COHORT" ]; then
+            echo "::error::the send-codes dispatch carried no client_payload.cohort_org - nothing to send."
+            exit 1
+          fi
+          # --dispatched-by names the course org whose registry authorises this cohort:
+          # the payload comes from a cohort's bot token, so the cohort it names is
+          # untrusted input.
+          python3 -m dsl_course.enrol_codes --cohort-org "$DISPATCH_COHORT" \
+            --dispatched-by "$COURSE"

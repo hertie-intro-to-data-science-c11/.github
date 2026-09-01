@@ -6,7 +6,7 @@ name: Check cohort setup
 # with direct links to fix it. Read-only - this workflow changes nothing.
 # It carries the GRAPH_* secrets to REPORT on them (present/absent only - no value is
 # printed), never to send: this is where a missing mail transport is meant to be caught,
-# before an enrolment: window opens over it.
+# before a roster push tries to mail a cohort its codes.
 
 on:
   workflow_dispatch:

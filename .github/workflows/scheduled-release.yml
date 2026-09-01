@@ -8,9 +8,6 @@ name: Scheduled release
 # `releases:` release whose `when` datetime has arrived. Releases are idempotent, so
 # re-releasing on the next hour is a no-op; grading is not re-run. On the cron it releases for
 # real; manual runs default to dry-run.
-# It also mails enrolment codes for as long as an `enrolment:` window is open - only to rows
-# with no `code_sent_at` yet, so an hourly re-run mails nobody twice. Needs the GRAPH_*
-# secrets, exactly as the Send enrolment codes button does.
 # Hourly so a `when` time-of-day is honoured to the hour (GitHub cron is UTC and best-effort).
 
 on:
@@ -47,10 +44,6 @@ jobs:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           COURSE: ${{ github.repository_owner }}
           DRY_RUN: ${{ inputs.dry_run }}
-          GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
-          GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
-          GRAPH_CLIENT_CERT: ${{ secrets.GRAPH_CLIENT_CERT }}
-          GRAPH_SENDER: ${{ secrets.GRAPH_SENDER }}
         run: |
           gh auth setup-git
           args=(--course-org "$COURSE" --all-cohorts)
