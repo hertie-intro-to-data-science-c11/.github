@@ -4,6 +4,9 @@ name: Check cohort setup
 
 # A per-cohort glance view of everything configured (and everything still missing),
 # with direct links to fix it. Read-only - this workflow changes nothing.
+# It carries the GRAPH_* secrets to REPORT on them (present/absent only - no value is
+# printed), never to send: this is where a missing mail transport is meant to be caught,
+# before an enrolment: window opens over it.
 
 on:
   workflow_dispatch:
@@ -57,5 +60,9 @@ jobs:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           COURSE: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
+          GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
+          GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
+          GRAPH_CLIENT_CERT: ${{ secrets.GRAPH_CLIENT_CERT }}
+          GRAPH_SENDER: ${{ secrets.GRAPH_SENDER }}
         run: |
           python3 -m dsl_course.status --course-org "$COURSE" --cohort-org "$COHORT_ORG" >> "$GITHUB_STEP_SUMMARY"
