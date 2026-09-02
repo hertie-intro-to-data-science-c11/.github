@@ -2,7 +2,7 @@
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
 name: Grade assignment
 
-# Faculty-side autograder, by hand. The hourly cron already grades each assignment ONCE at
+# Faculty-side autograder, by hand. The Scheduled release cron already grades each ONCE at
 # its grading deadline - this workflow is for a deliberate re-grade. Clones each submission as
 # of the cohort schedule's grading deadline (`grading_datetime`, else `due_datetime` -
 # SSOT, no input here), runs the HIDDEN tests from the template's solution branch, archives

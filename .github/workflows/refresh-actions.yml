@@ -64,9 +64,9 @@ jobs:
             gh issue create --repo "$REPO" --title "$title" --body "$body"
             exit 0
           fi
-          # Already open. The hourly scheduler fails EVERY hour while a fault stands, and
-          # a comment per run buried the thread and mentioned course-admin 24 times a day
-          # about one fault. So comment only once the thread has been quiet for six hours,
+          # Already open. The scheduler fails on EVERY tick while a fault stands, and a
+          # comment per run buried the thread and mentioned course-admin dozens of times a
+          # day about one fault. So comment only once the thread has been quiet for six hours,
           # and without the cc - whoever it reached the first time is already subscribed.
           # An unparseable timestamp reads as epoch, i.e. "long overdue": the point of the
           # issue is that somebody hears about the failure.
