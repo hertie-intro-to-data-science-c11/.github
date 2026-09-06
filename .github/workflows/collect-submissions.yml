@@ -1,19 +1,14 @@
 # SYSTEM-OWNED - do not edit, edits here are overwritten. This workflow is
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
-name: Grade assignment
+name: Collect submissions
 
-# Faculty-side autograder, by hand. The Scheduled release cron already grades each ONCE at
-# its grading deadline - this workflow is for a deliberate re-grade. Clones each submission as
-# of the cohort schedule's grading deadline (`grading_datetime`, else `due_datetime` -
-# SSOT, no input here), runs the HIDDEN tests from the template's solution branch, archives
-# result.json, and fills the machine score into the private grades CSV (faculty & instructors
-# then add manual marks; Render + Distribute send them).
+# Brings an assignment's grading sheet up to date NOW instead of waiting for the next
+# quarter-hour tick: it re-reads each submission repo's latest commit, refills the `info:`
+# block (submitted, days late, contributions) and posts any submission receipt still owed.
 #
-# WRITE-ONCE: an `autograde_score`/`team` cell that already holds a value is never
-# overwritten, so re-running does NOT refresh scores - it only fills cells still empty. For a
-# fresh machine score, clear those cells first (and delete classroom-config/autograde/<slug>/
-# to let the cron regrade). Nothing is written to student repos. dry_run lists what would be
-# graded.
+# It never freezes anything. The pin is frozen once, by the cron, at the assignment's
+# grading deadline - so a grader can press this as often as they like without moving what
+# anyone is marked on. Nothing is written to a student repo except that receipt.
 
 on:
   workflow_dispatch:
@@ -29,17 +24,13 @@ on:
       course_source_repo:
         description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
         required: true
-      group:
-        description: "Group assignment - grade one repo per team"
-        type: boolean
-        default: false
       dry_run:
-        description: "Preview only - list the repos that WOULD be graded"
+        description: "Preview only - show what WOULD be refreshed"
         type: boolean
         default: false
 
 concurrency:
-  group: ${{ github.repository }}-grade-assignment
+  group: ${{ github.repository }}-collect-submissions
   cancel-in-progress: false
 
 permissions: {}
@@ -64,7 +55,7 @@ jobs:
           cat /tmp/gherr || true
           exit 1
 
-  grade:
+  collect-submissions:
     needs: check-team
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -77,18 +68,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Grade
+      - name: Collect submissions
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           MASTER_ORG: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
           COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
-          GROUP: ${{ inputs.group }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
-          gh auth setup-git
-          pip install --quiet pytest nbconvert
-          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG")
-          [ "$GROUP" = "true" ] && args+=(--group)
+          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" --refresh-only)
           [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
           python3 -m dsl_course.collect "${args[@]}"
