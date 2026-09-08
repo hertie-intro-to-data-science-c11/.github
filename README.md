@@ -15,6 +15,7 @@ Open the **[Actions tab](https://github.com/hertie-intro-to-data-science-c11/.gi
 2. Create an empty **cohort org** for the year, add the bot as an Owner, then run **Bootstrap cohort**.
 3. Each session: **Release materials** / **Release assignment** - or pre-schedule them in `schedule.yml` (recommended).
 4. Grading: the sheet appears at handout -> **Collect submissions** (or wait for the cron) -> type the marks -> **Distribute grades** (dry run first).
+5. End of term: **Archive cohort** - freezes the year's student repos and seals the cohort's private record. Nothing is deleted.
 
 ## What's in here
 
