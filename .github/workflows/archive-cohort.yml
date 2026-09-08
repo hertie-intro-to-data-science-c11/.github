@@ -1,40 +1,40 @@
 # SYSTEM-OWNED - do not edit, edits here are overwritten. This workflow is
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
-name: Collect submissions
+name: Archive cohort
 
-# Brings an assignment's grading sheet up to date NOW instead of waiting for the next
-# quarter-hour tick: it re-reads each submission repo's latest commit, refills the `info:`
-# block (submitted, days late, contributions) and posts any submission receipt still owed.
-#
-# It never freezes anything. The pin is frozen once, by the cron, at the assignment's
-# grading deadline - so a grader can press this as often as they like without moving what
-# anyone is marked on. Nothing is written to a student repo except that receipt.
+# End of term, once, after the last grades have gone out. Revokes each student's direct
+# grant on the submission repos and gradebooks named after them, ARCHIVES those repos,
+# archives `welcome` so a finished term cannot still be joined, writes the teardown record
+# into the cohort's private classroom-config and archives that last - which is also what
+# tells the nightly refresh this cohort is finished.
+# NOTHING IS DELETED. Archiving is GitHub's reversible read-only freeze, and un-archiving a
+# repo from its own Settings page brings it back exactly as it was.
+# `dry_run` defaults to true and prints counts only. A real run refuses unless the cohort's
+# schedule.yml declares a `semester_end` that has passed; `force` says so by hand.
+# A run that dies half way is resumed by running it again - see docs/10.
 
 on:
   workflow_dispatch:
     inputs:
       cohort_org:
-        description: "Cohort org (submissions)"
+        description: "Cohort org"
         required: true
         type: choice
         default: "hertie-intro-to-data-science-f2026"
         options:
           - hertie-intro-to-data-science-f2025
           - hertie-intro-to-data-science-f2026
-      course_source_repo:
-        description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
-        required: true
-      slug:
-        description: "Only if TWO schedule.yml assignments hand out from this template: which one (the schedule key). Leave empty otherwise"
-        required: false
-        default: ""
       dry_run:
-        description: "Preview only - show what WOULD be refreshed"
+        description: "Preview the teardown - freeze nothing, revoke nothing"
+        type: boolean
+        default: true
+      force:
+        description: "Close out even though the term is not over"
         type: boolean
         default: false
 
 concurrency:
-  group: ${{ github.repository }}-collect-submissions
+  group: ${{ github.repository }}-archive-cohort
   cancel-in-progress: false
 
 permissions: {}
@@ -59,10 +59,10 @@ jobs:
           cat /tmp/gherr || true
           exit 1
 
-  collect-submissions:
+  archive-cohort:
     needs: check-team
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
@@ -72,16 +72,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Collect submissions
+      - name: Archive cohort
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
-          MASTER_ORG: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
-          COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
-          SLUG: ${{ inputs.slug }}
           DRY_RUN: ${{ inputs.dry_run }}
+          FORCE: ${{ inputs.force }}
         run: |
-          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" --refresh-only)
-          [ -n "$SLUG" ] && args+=(--slug "$SLUG")
-          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
-          python3 -m dsl_course.collect "${args[@]}"
+          args=(--cohort-org "$COHORT_ORG")
+          if [ "$DRY_RUN" = "false" ]; then args+=(--no-dry-run); else args+=(--dry-run); fi
+          [ "$FORCE" = "true" ] && args+=(--force)
+          python3 -m dsl_course.teardown "${args[@]}"

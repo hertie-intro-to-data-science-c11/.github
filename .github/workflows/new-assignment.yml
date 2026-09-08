@@ -5,28 +5,55 @@ name: New assignment
 on:
   workflow_dispatch:
     inputs:
-      number:
-        description: "Assignment number (e.g. 1)"
+      assignment_name:
+        description: "1. The assignment's name, e.g. Neural networks from scratch"
         required: true
-      tag:
-        description: "Year tag, e.g. f2026 or s2026 - creates assignment-<number>-<tag>"
+      assignment_number:
+        description: "2. Assignment number, e.g. 1"
+        required: true
+      semester_tag:
+        description: "3. Year tag, e.g. f2026 or s2026 - creates assignment-<number>-<tag>"
         required: true
       format:
-        description: "Starter format - a .py script or a Jupyter notebook"
+        description: "4. Which starter file to seed - none = the brief only. Grading reads whatever students commit either way"
         required: true
         type: choice
-        default: py
+        default: "ipynb"
         options:
+          - ipynb
           - py
-          - notebook
+          - rmd
+          - qmd
+          - latex
+          - none
       type:
-        description: "individual = one repo per student; group = one repo per team (teams.csv)"
+        description: "5. individual = one repo per student; group = one repo per team (teams.csv)"
         required: true
         type: choice
-        default: individual
+        default: "individual"
         options:
           - individual
           - group
+      team_formation:
+        description: "6. Group only: self_select = students use the Join team form; assigned = you write teams.csv"
+        required: true
+        type: choice
+        default: "self_select"
+        options:
+          - self_select
+          - assigned
+      submit_via:
+        description: "7. external = handed in off GitHub (Moodle, Kaggle, in class) - no receipts, no late arithmetic"
+        required: true
+        type: choice
+        default: "github"
+        options:
+          - github
+          - external
+      autograde:
+        description: "8. Run the template's tests/ at the cutoff. The count is shown to graders, never to a student"
+        type: boolean
+        default: false
 
 permissions: {}
 
@@ -68,12 +95,18 @@ jobs:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           DSL_BOT_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           ORG: ${{ github.repository_owner }}
-          NUMBER: ${{ inputs.number }}
-          TAG: ${{ inputs.tag }}
+          NAME: ${{ inputs.assignment_name }}
+          NUMBER: ${{ inputs.assignment_number }}
+          TAG: ${{ inputs.semester_tag }}
           FORMAT: ${{ inputs.format }}
           TYPE: ${{ inputs.type }}
+          TEAM_FORMATION: ${{ inputs.team_formation }}
+          SUBMIT_VIA: ${{ inputs.submit_via }}
+          AUTOGRADE: ${{ inputs.autograde }}
         run: |
           gh auth setup-git
           python3 -m dsl_course.scaffold assignment --org "$ORG" --number "$NUMBER" \
-            --tag "$TAG" --format "$FORMAT" --type "$TYPE"
+            --tag "$TAG" --name "$NAME" --format "$FORMAT" --type "$TYPE" \
+            --team-formation "$TEAM_FORMATION" --submit-via "$SUBMIT_VIA" \
+            --autograde "$AUTOGRADE"
           python3 -m dsl_course.seed refresh --course-org "$ORG"
