@@ -1,20 +1,22 @@
 # SYSTEM-OWNED - do not edit, edits here are overwritten. This workflow is
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
-name: Collect submissions
+name: Patch released assignment
 
-# Brings an assignment's grading sheet up to date NOW instead of waiting for the next
-# quarter-hour tick: it re-reads each submission repo's latest commit, refills the `info:`
-# block (submitted, days late, contributions) and posts any submission receipt still owed.
-#
-# It never freezes anything. The pin is frozen once, by the cron, at the assignment's
-# grading deadline - so a grader can press this as often as they like without moving what
-# anyone is marked on. Nothing is written to a student repo except that receipt.
+# A broken cell, a wrong path, a dataset that moved - after the assignment went out.
+# Commit the fix to the TEMPLATE's default branch first, then run this: it pushes that
+# file (or folder) into every submission repo of the assignment, as a NEW COMMIT on each
+# student's own branch, and posts a note on each Feedback issue telling them to pull.
+# It never force-pushes, and it never replaces a file a student has already changed
+# unless `overwrite` says so - their version is kept and counted instead.
+# The frozen cohort-side hand-out is patched too, so a student who onboards tomorrow is
+# given the corrected file rather than the one everyone else was just patched off.
+# `dry_run` defaults to true. See docs/09-release-assignment-to-cohort.md.
 
 on:
   workflow_dispatch:
     inputs:
       cohort_org:
-        description: "Cohort org (submissions)"
+        description: "Cohort org holding the submission repos"
         required: true
         type: choice
         default: "hertie-intro-to-data-science-f2026"
@@ -22,19 +24,26 @@ on:
           - hertie-intro-to-data-science-f2025
           - hertie-intro-to-data-science-f2026
       course_source_repo:
-        description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
+        description: "Assignment template holding the corrected file (e.g. assignment-1-f2026)"
+        required: true
+      path:
+        description: "File or folder on the template's default branch to push (e.g. starter.ipynb, or data/)"
         required: true
       slug:
         description: "Only if TWO schedule.yml assignments hand out from this template: which one (the schedule key). Leave empty otherwise"
         required: false
         default: ""
-      dry_run:
-        description: "Preview only - show what WOULD be refreshed"
+      overwrite:
+        description: "Replace the file even where the student has already changed it (their work on that file is lost)"
         type: boolean
         default: false
+      dry_run:
+        description: "Preview only - count the repos that would be patched, write nothing"
+        type: boolean
+        default: true
 
 concurrency:
-  group: ${{ github.repository }}-collect-submissions
+  group: ${{ github.repository }}-patch-assignment
   cancel-in-progress: false
 
 permissions: {}
@@ -59,10 +68,10 @@ jobs:
           cat /tmp/gherr || true
           exit 1
 
-  collect-submissions:
+  patch:
     needs: check-team
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
@@ -78,21 +87,19 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Create the account graded code runs as
-        run: |
-          id -u dsl-sandbox >/dev/null 2>&1 \
-            || sudo useradd --system --no-create-home --shell /usr/sbin/nologin dsl-sandbox
-          sudo -n -u dsl-sandbox true
-      - name: Collect submissions
+      - name: Patch released assignment
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
           MASTER_ORG: ${{ github.repository_owner }}
           COHORT_ORG: ${{ inputs.cohort_org }}
           COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
+          PATH_INPUT: ${{ inputs.path }}
           SLUG: ${{ inputs.slug }}
+          OVERWRITE: ${{ inputs.overwrite }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
-          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" --refresh-only)
+          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" --patch-path "$PATH_INPUT")
           [ -n "$SLUG" ] && args+=(--slug "$SLUG")
-          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
-          python3 -m dsl_course.collect "${args[@]}"
+          [ "$OVERWRITE" = "true" ] && args+=(--overwrite)
+          if [ "$DRY_RUN" = "false" ]; then args+=(--no-dry-run); else args+=(--dry-run); fi
+          python3 -m dsl_course.assign "${args[@]}"

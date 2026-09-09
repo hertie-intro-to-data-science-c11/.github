@@ -1,40 +1,31 @@
 # SYSTEM-OWNED - do not edit, edits here are overwritten. This workflow is
 # re-rendered from the central DSL teaching toolkit by 'Refresh actions' (nightly).
-name: Collect submissions
+name: Derive student version
 
-# Brings an assignment's grading sheet up to date NOW instead of waiting for the next
-# quarter-hour tick: it re-reads each submission repo's latest commit, refills the `info:`
-# block (submitted, days late, contributions) and posts any submission receipt still owed.
-#
-# It never freezes anything. The pin is frozen once, by the cron, at the assignment's
-# grading deadline - so a grader can press this as often as they like without moving what
-# anyone is marked on. Nothing is written to a student repo except that receipt.
+# ONE authored file, two branches. Keep the notebook you actually teach from on the
+# template's `solution` branch, under `solution/`, with the answers fenced off in the
+# nbgrader/Otter vocabulary: `### BEGIN SOLUTION` / `### END SOLUTION`, a `solution` cell
+# tag, or an Rmd/qmd chunk with `solution=TRUE`. This reads that branch and writes the
+# fenced-out version onto `main` - the only branch template-generate copies into a student
+# repo - so the starter is never maintained by hand beside the answer it is meant to be
+# missing. It never writes to `solution`, and a file with nothing fenced in it is never
+# written at all: the "starter" derived from that would be the model answer.
+# `dry_run` defaults to true and prints the file list and the counts, never the content.
+# See docs/03-add-assignment-to-course.md.
 
 on:
   workflow_dispatch:
     inputs:
-      cohort_org:
-        description: "Cohort org (submissions)"
-        required: true
-        type: choice
-        default: "hertie-intro-to-data-science-f2026"
-        options:
-          - hertie-intro-to-data-science-f2025
-          - hertie-intro-to-data-science-f2026
       course_source_repo:
-        description: "Course-org repo to hand out from (e.g. assignment-1-f2026)"
+        description: "Assignment template to derive the student starter for (e.g. assignment-1-f2026)"
         required: true
-      slug:
-        description: "Only if TWO schedule.yml assignments hand out from this template: which one (the schedule key). Leave empty otherwise"
-        required: false
-        default: ""
       dry_run:
-        description: "Preview only - show what WOULD be refreshed"
+        description: "Preview only - list the files and how much would be stripped out of each"
         type: boolean
-        default: false
+        default: true
 
 concurrency:
-  group: ${{ github.repository }}-collect-submissions
+  group: ${{ github.repository }}-derive-student-version
   cancel-in-progress: false
 
 permissions: {}
@@ -59,10 +50,10 @@ jobs:
           cat /tmp/gherr || true
           exit 1
 
-  collect-submissions:
+  derive:
     needs: check-team
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
@@ -78,21 +69,13 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - name: Create the account graded code runs as
-        run: |
-          id -u dsl-sandbox >/dev/null 2>&1 \
-            || sudo useradd --system --no-create-home --shell /usr/sbin/nologin dsl-sandbox
-          sudo -n -u dsl-sandbox true
-      - name: Collect submissions
+      - name: Derive student version
         env:
           GH_TOKEN: ${{ secrets.DSL_BOT_TOKEN }}
-          MASTER_ORG: ${{ github.repository_owner }}
-          COHORT_ORG: ${{ inputs.cohort_org }}
+          COURSE_ORG: ${{ github.repository_owner }}
           COURSE_SOURCE_REPO: ${{ inputs.course_source_repo }}
-          SLUG: ${{ inputs.slug }}
           DRY_RUN: ${{ inputs.dry_run }}
         run: |
-          args=(--master-org "$MASTER_ORG" --course-source-repo "$COURSE_SOURCE_REPO" --cohort-org "$COHORT_ORG" --refresh-only)
-          [ -n "$SLUG" ] && args+=(--slug "$SLUG")
-          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
-          python3 -m dsl_course.collect "${args[@]}"
+          args=(--course-org "$COURSE_ORG" --course-source-repo "$COURSE_SOURCE_REPO")
+          if [ "$DRY_RUN" = "false" ]; then args+=(--no-dry-run); else args+=(--dry-run); fi
+          python3 -m dsl_course.derive "${args[@]}"
