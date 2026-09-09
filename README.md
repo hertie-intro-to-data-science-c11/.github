@@ -12,6 +12,7 @@ Open the **[Actions tab](https://github.com/hertie-intro-to-data-science-c11/.gi
 ## Typical flow
 
 1. **New materials repo** / **New assignment** - scaffold your content repos, then fill them in.
+   Write the answer once on the `solution` branch and let **Derive student version** write `main`'s starter from it.
 2. Create an empty **cohort org** for the year, add the bot as an Owner, then run **Bootstrap cohort**.
 3. Each session: **Release materials** / **Release assignment** - or pre-schedule them in `schedule.yml` (recommended).
 4. Grading: the sheet appears at handout -> **Collect submissions** (or wait for the cron) -> type the marks -> **Distribute grades** (dry run first).
