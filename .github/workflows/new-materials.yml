@@ -7,6 +7,12 @@ name: New materials repo
 # one year to the next. Only the toolkit's own files are rewritten afterwards; yours
 # arrive exactly as you left them. Leave it on the first option for a fresh starter.
 # The dropdown is refreshed by the 'Refresh actions' workflow.
+#
+# The last two boxes write the new repo's `publish.yml` - what the cohort site may host
+# publicly, so an HTML deck opens rendered in a browser instead of showing as source on
+# GitHub. Everything else stays private, exactly as today. They seed the file and nothing
+# more: edit it in the repo afterwards, and no workflow rewrites it. A copied repo brings
+# its own, so they are ignored on `copy_from`.
 
 on:
   workflow_dispatch:
@@ -22,6 +28,23 @@ on:
           - (fresh starter)
           - course-materials-f2025
           - course-materials-f2026
+      public_dirs:
+        description: "Rendered publicly on the cohort site: which folders. Everything else stays private to enrolled students"
+        type: choice
+        default: "(nothing public)"
+        options:
+          - (nothing public)
+          - lectures
+          - everything except readings
+          - everything
+      public_types:
+        description: "Rendered publicly on the cohort site: which file types out of those folders"
+        type: choice
+        default: "html + pdf"
+        options:
+          - html
+          - html + pdf
+          - all files
 
 permissions: {}
 
@@ -71,9 +94,12 @@ jobs:
           ORG: ${{ github.repository_owner }}
           TAG: ${{ inputs.tag }}
           COPY_FROM: ${{ inputs.copy_from }}
+          PUBLIC_DIRS: ${{ inputs.public_dirs }}
+          PUBLIC_TYPES: ${{ inputs.public_types }}
         run: |
           gh auth setup-git
-          args=(--org "$ORG" --tag "$TAG")
+          args=(--org "$ORG" --tag "$TAG" \
+            --public-dirs "$PUBLIC_DIRS" --public-types "$PUBLIC_TYPES")
           [ "$COPY_FROM" = "(fresh starter)" ] && COPY_FROM=""
           [ -n "$COPY_FROM" ] && args+=(--copy-from "$COPY_FROM")
           python3 -m dsl_course.scaffold materials "${args[@]}"
