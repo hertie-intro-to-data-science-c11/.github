@@ -15,7 +15,7 @@ on:
         description: "3. Year tag, e.g. f2026 or s2026 - creates assignment-<number>-<tag>"
         required: true
       copy_from:
-        description: "4. Copy an existing template forward instead - both branches, whole history. Boxes 5-9 are then ignored"
+        description: "4. Copy an existing template forward instead - both branches, whole history. Boxes 5-10 are then ignored"
         required: false
         type: choice
         options:
@@ -38,16 +38,25 @@ on:
           - self_select
           - assigned
       submit_via:
-        description: "8. Where students hand in. github = they push to their repo and the cutoff, receipts and late window apply; external = handed in elsewhere (Moodle, Kaggle, in class), so the repo only carries the brief and nothing is collected"
+        description: "8. Where students hand in. assignment_repo = they push to their repo and the cutoff, receipts and late window apply; external = handed in elsewhere (Moodle, Kaggle, in class): no repo is created, the brief and a submit link appear on the site; shared_dropbox_repo = one private repo for the whole cohort, each student pushes into their own folder, peers can read it"
         type: choice
-        default: "github"
+        default: "assignment_repo"
         options:
-          - github
+          - assignment_repo
+          - shared_dropbox_repo
           - external
       autograde:
         description: "9. Also run hidden tests at the cutoff. Seeds tests/ on the solution branch for you to fill; each submission's pass count automatically appears on the grading sheet as a first pass for graders - not shown to students"
         type: boolean
         default: false
+      visibility:
+        description: "10. Who may read each student's repo. private = the student and the teaching team; public = the whole internet, for portfolio work such as a hackathon; student_choice = private, but the student is its admin and may publish it once the grading cutoff has passed. Read when the repo is created: editing it later changes nothing"
+        type: choice
+        default: "private"
+        options:
+          - private
+          - public
+          - student_choice
 
 permissions: {}
 
@@ -103,12 +112,14 @@ jobs:
           TYPE: ${{ inputs.type }}
           TEAM_FORMATION: ${{ inputs.team_formation }}
           SUBMIT_VIA: ${{ inputs.submit_via }}
+          VISIBILITY: ${{ inputs.visibility }}
           AUTOGRADE: ${{ inputs.autograde }}
         run: |
           gh auth setup-git
           args=(--org "$ORG" --number "$NUMBER" --tag "$TAG" --name "$NAME" \
             --format "$FORMAT" --type "$TYPE" --team-formation "$TEAM_FORMATION" \
-            --submit-via "$SUBMIT_VIA" --autograde "$AUTOGRADE")
+            --submit-via "$SUBMIT_VIA" --visibility "$VISIBILITY" \
+            --autograde "$AUTOGRADE")
           [ "$COPY_FROM" = "(fresh starter)" ] && COPY_FROM=""
           [ -n "$COPY_FROM" ] && args+=(--copy-from "$COPY_FROM")
           python3 -m dsl_course.scaffold assignment "${args[@]}"
